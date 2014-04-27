@@ -4,6 +4,7 @@ Priority: optional
 Maintainer: Maximiliano Curia <maxy@debian.org>
 Uploaders: Margarita Manterola <marga@debian.org>
 Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
                libglib2.0-dev (>= 2.30.0),
                gnome-pkg-tools,
                python3 (>= 3.1),
