@@ -1,0 +1,3 @@
+version=3
+opts="filenamemangle=s/.*\/(.*)/cinnamon-menus-$1/" \
+    https://github.com/linuxmint/cinnamon-menus/tags .*/(\d.*)\.(?:tgz|tar\.(?:gz|bz2|xz))
