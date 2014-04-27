@@ -1,5 +1,6 @@
 cinnamon-menus (2.2.0-1~) UNRELEASED; urgency=medium
 
-  * Initial Release (Closes: #)
+  * Initial Release (Closes: #7XXXXXX)
+  * Adapted build to multiarch.
 
  -- Margarita Manterola <marga@debian.org>  Sun, 27 Apr 2014 10:57:13 +0200

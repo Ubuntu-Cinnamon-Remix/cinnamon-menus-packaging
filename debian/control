@@ -3,6 +3,7 @@ Section: x11
 Priority: optional
 Maintainer: Maximiliano Curia <maxy@debian.org>
 Uploaders: Margarita Manterola <marga@debian.org>
+Homepage: http://cinnamon.linuxmint.com
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
                libglib2.0-dev (>= 2.30.0),
@@ -24,9 +25,6 @@ Description: Cinnamon implementation of the freedesktop menu specification
  .
  http://www.freedesktop.org/Standards/menu-spec
  .
- Also contained here are the Cinnamon menu layout configuration files, .directory
- files and assorted menu related utility programs.
- .
  This package contains the shared library.
 
 Package: libcinnamon-menu-3-0-dbg
@@ -40,9 +38,6 @@ Description: Cinnamon implementation of the freedesktop menu specification
  "Desktop Menu Specification" from freedesktop.org:
  .
  http://www.freedesktop.org/Standards/menu-spec
- .
- Also contained here are the Cinnamon menu layout configuration files, .directory
- files and assorted menu related utility programs.
  .
  This package contains debugging symbols.
 
@@ -59,9 +54,6 @@ Description: Cinnamon implementation of the freedesktop menu specification
  "Desktop Menu Specification" from freedesktop.org:
  .
  http://www.freedesktop.org/Standards/menu-spec
- .
- Also contained here are the Cinnamon menu layout configuration files, .directory
- files and assorted menu related utility programs.
  .
  This package contains the development headers.
 
