@@ -7,5 +7,6 @@ cinnamon-menus (2.2.0-1) UNRELEASED; urgency=medium
   [ Maximiliano Curia ]
   * Update copyright information.
   * Update install files.
+  * Actually fill the debug package.
 
  -- Maximiliano Curia <maxy@debian.org>  Fri, 16 May 2014 20:16:30 +0200
