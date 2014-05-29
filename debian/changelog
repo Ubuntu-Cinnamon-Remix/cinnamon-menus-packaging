@@ -1,4 +1,4 @@
-cinnamon-menus (2.2.0-1) UNRELEASED; urgency=medium
+cinnamon-menus (2.2.0-1) experimental; urgency=medium
 
   [ Margarita Manterola ]
   * Initial Release (Closes: #746040)
@@ -9,4 +9,4 @@ cinnamon-menus (2.2.0-1) UNRELEASED; urgency=medium
   * Update install files.
   * Actually fill the debug package.
 
- -- Maximiliano Curia <maxy@debian.org>  Fri, 16 May 2014 20:16:30 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Thu, 29 May 2014 11:25:49 +0200
