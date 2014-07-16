@@ -9,4 +9,4 @@ cinnamon-menus (2.2.0-1) experimental; urgency=medium
   * Update install files.
   * Actually fill the debug package.
 
- -- Maximiliano Curia <maxy@debian.org>  Thu, 29 May 2014 11:25:49 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Wed, 16 Jul 2014 11:21:03 +0200
