@@ -14,6 +14,8 @@ Build-Depends: debhelper (>= 9),
                libglib2.0-dev (>= 2.30.0),
                python3 (>= 3.1)
 Standards-Version: 3.9.5
+Vcs-Browser: http://anonscm.debian.org/gitweb/?p=pkg-cinnamon/cinnamon-menus.git
+Vcs-Git: git://anonscm.debian.org/pkg-cinnamon/cinnamon-menus.git
 X-Python3-Version: >= 3.1
 
 Package: libcinnamon-menu-3-0
