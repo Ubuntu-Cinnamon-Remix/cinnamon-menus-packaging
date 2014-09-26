@@ -1,3 +1,10 @@
+cinnamon-menus (2.2.0-3~) UNRELEASED; urgency=medium
+
+  * Install typelib files in multiarch libdir. (Closes: #762830)
+    Thanks to Iain Lane.
+
+ -- Fabio Fantoni <fantonifabio@tiscali.it>  Fri, 26 Sep 2014 15:25:00 +0200
+
 cinnamon-menus (2.2.0-2) unstable; urgency=medium
 
   * Release to unstable.
