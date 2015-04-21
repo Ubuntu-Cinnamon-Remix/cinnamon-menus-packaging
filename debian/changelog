@@ -1,8 +1,8 @@
-cinnamon-menus (2.4.2-1~) UNRELEASED; urgency=medium
+cinnamon-menus (2.4.2-1) experimental; urgency=medium
 
   * New upstream release (2.4.2).
 
- -- Maximiliano Curia <maxy@debian.org>  Tue, 21 Apr 2015 20:21:16 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Tue, 21 Apr 2015 23:18:16 +0200
 
 cinnamon-menus (2.2.0-3) unstable; urgency=medium
 
