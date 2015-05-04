@@ -63,7 +63,10 @@ Description: Cinnamon implementation of the freedesktop menu specification
 Package: gir1.2-cmenu-3.0
 Section: introspection
 Architecture: any
-Depends: ${gir:Depends}, ${misc:Depends}, ${shlibs:Depends}
+Depends: libcinnamon-menu-3-0 (= ${binary:Version}),
+         ${gir:Depends},
+         ${misc:Depends},
+         ${shlibs:Depends}
 Conflicts: gobject-introspection-repository
 Description: GObject introspection data for the Cinnamon menu library
  This package contains introspection data for Cinnamon menu, an
