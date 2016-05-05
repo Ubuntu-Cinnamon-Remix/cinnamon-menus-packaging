@@ -1,6 +1,6 @@
 AC_PREREQ(2.62)
 
-AC_INIT([cinnamon-menus], [2.8.0])
+AC_INIT([cinnamon-menus], [3.0.0])
 AC_CONFIG_SRCDIR(libmenu/gmenu-tree.h)
 
 AM_INIT_AUTOMAKE([1.11 foreign no-dist-gzip dist-xz])
@@ -22,7 +22,6 @@ GNOME_MAINTAINER_MODE_DEFINES
 LIB_MENU_LT_VERSION=0:1:0
 AC_SUBST(LIB_MENU_LT_VERSION)
 
-AC_ISC_POSIX
 AC_PROG_CC
 AC_STDC_HEADERS
 AC_ARG_PROGRAM
