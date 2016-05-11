@@ -7,7 +7,7 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 	dh $@ --parallel --with=autoreconf,python3
 
 override_dh_strip:
-	dh_strip --dbg-package=libcinnamon-menu-3-0-dbg
+	dh_strip --dbgsym-migration='libcinnamon-menu-3-0-dbg (<= 3.0.0-1~~)'
 
 override_dh_install:
 	dh_install --list-missing

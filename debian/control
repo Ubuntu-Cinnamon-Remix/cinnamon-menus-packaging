@@ -61,16 +61,3 @@ Description: GObject introspection data for the Cinnamon menu library
  .
  It can be used by languages supporting dynamic bindings with
  the GIRepository format.
-
-Package: libcinnamon-menu-3-0-dbg
-Section: debug
-Priority: extra
-Architecture: any
-Depends: libcinnamon-menu-3-0 (= ${binary:Version}), ${misc:Depends}
-Description: Cinnamon implementation of the freedesktop menu specification
- The package contains an implementation of the draft
- "Desktop Menu Specification" from freedesktop.org:
- .
- http://www.freedesktop.org/Standards/menu-spec
- .
- This package contains debugging symbols.
