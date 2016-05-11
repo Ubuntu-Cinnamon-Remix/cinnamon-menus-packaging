@@ -1,8 +1,17 @@
-Index: cinnamon-menus/configure.ac
+From: Debian Cinnamon Team <pkg-cinnamon-team@lists.alioth.debian.org>
+Date: Wed, 11 May 2016 20:56:57 +0200
+Subject: fix_configure
+
 ===================================================================
---- cinnamon-menus.orig/configure.ac	2014-04-27 11:33:08.968547222 +0200
-+++ cinnamon-menus/configure.ac	2014-04-27 12:08:51.696436716 +0200
-@@ -33,7 +33,7 @@
+---
+ configure.ac | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configure.ac b/configure.ac
+index a7042df..9b5dff9 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -32,7 +32,7 @@ PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0 >= 2.29.15)
  AC_SUBST(GIO_UNIX_CFLAGS)
  AC_SUBST(GIO_UNIX_LIBS)
  
