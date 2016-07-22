@@ -8,7 +8,7 @@ Subject: fix_configure
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/configure.ac b/configure.ac
-index a7042df..9b5dff9 100644
+index 0b022b8..096c3a4 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -32,7 +32,7 @@ PKG_CHECK_MODULES(GIO_UNIX, gio-unix-2.0 >= 2.29.15)

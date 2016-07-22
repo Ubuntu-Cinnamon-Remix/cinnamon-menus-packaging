@@ -1,7 +1,12 @@
 cinnamon-menus (3.0.2-1) UNRELEASED; urgency=medium
 
+  [ Margarita Manterola ]
   * Fix dbgsym-migration rules
   * New upstream release.
+
+  [ Maximiliano Curia ]
+  * Add new patch: Migrate-away-from-gnome-common-deprecated-vars-and-
+    macros.patch (Closes: 829956)
 
  -- Margarita Manterola <marga@debian.org>  Tue, 31 May 2016 19:41:55 +0200
 
