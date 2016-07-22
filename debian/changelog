@@ -1,4 +1,4 @@
-cinnamon-menus (3.0.2-1) UNRELEASED; urgency=medium
+cinnamon-menus (3.0.2-1) unstable; urgency=medium
 
   [ Margarita Manterola ]
   * Fix dbgsym-migration rules
@@ -9,7 +9,7 @@ cinnamon-menus (3.0.2-1) UNRELEASED; urgency=medium
     macros.patch (Closes: 829956)
   * Add build dependency on autoconf-archive.
 
- -- Margarita Manterola <marga@debian.org>  Tue, 31 May 2016 19:41:55 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Fri, 22 Jul 2016 14:13:11 +0200
 
 cinnamon-menus (3.0.1-1) unstable; urgency=medium
 
