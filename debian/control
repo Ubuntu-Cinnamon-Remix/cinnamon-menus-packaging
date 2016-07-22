@@ -8,6 +8,7 @@ Uploaders: Maximiliano Curia <maxy@debian.org>,
 Homepage: http://cinnamon.linuxmint.com
 Build-Depends: debhelper (>= 9),
                dh-autoreconf,
+               autoconf-archive,
                dh-python,
                gnome-pkg-tools,
                gobject-introspection (>= 0.9.12-4~),
