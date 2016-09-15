@@ -7,7 +7,7 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 	dh $@ --parallel --with=autoreconf
 
 override_dh_autoreconf:
-	dh_autoreconf --as-needed ./autogen.sh
+	NOCONFIGURE=1 dh_autoreconf --as-needed ./autogen.sh
 
 override_dh_strip:
 	dh_strip --dbgsym-migration='libcinnamon-menu-3-0-dbg (<< 3.0.0-1~)' || dh_strip
