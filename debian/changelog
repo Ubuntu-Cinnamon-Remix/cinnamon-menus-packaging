@@ -2,6 +2,7 @@ cinnamon-menus (3.2.0-1) UNRELEASED; urgency=medium
 
   * New upstream release.
   * Remove obsolete fix_configure patch.
+  * Remove obsolete gnome migration patches.
 
  -- Margarita Manterola <marga@debian.org>  Sat, 19 Nov 2016 12:28:17 +0100
 
