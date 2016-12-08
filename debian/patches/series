@@ -1,4 +1,3 @@
-fix_configure
 Migrate-away-from-gnome-common-deprecated-vars-and-macros.patch
 Drop-gtkdocize-invocation.patch
 Make-AX_-macros-optional.patch
