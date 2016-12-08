@@ -1,4 +1,4 @@
-cinnamon-menus (3.2.0-1) UNRELEASED; urgency=medium
+cinnamon-menus (3.2.0-1~) UNRELEASED; urgency=medium
 
   * New upstream release.
   * Remove obsolete fix_configure patch.
