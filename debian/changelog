@@ -1,10 +1,11 @@
-cinnamon-menus (3.2.0-1~) UNRELEASED; urgency=medium
+cinnamon-menus (3.2.0-1) experimental; urgency=medium
 
+  [ Margarita Manterola ]
   * New upstream release.
   * Remove obsolete fix_configure patch.
   * Remove obsolete gnome migration patches.
 
- -- Margarita Manterola <marga@debian.org>  Sat, 19 Nov 2016 12:28:17 +0100
+ -- Maximiliano Curia <maxy@debian.org>  Fri, 16 Dec 2016 22:09:03 +0100
 
 cinnamon-menus (3.0.2-1) unstable; urgency=medium
 
