@@ -1,8 +1,10 @@
-cinnamon-menus (3.4.0-1~) UNRELEASED; urgency=medium
+cinnamon-menus (3.4.0-1) experimental; urgency=medium
 
   * New upstream release (3.4.0).
+  * Bump group breaks (3.4)
+  * Release to experimental
 
- -- Maximiliano Curia <maxy@debian.org>  Sat, 05 Aug 2017 01:06:28 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Sun, 06 Aug 2017 17:31:41 +0200
 
 cinnamon-menus (3.2.0-3) unstable; urgency=medium
 
