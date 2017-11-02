@@ -31,7 +31,7 @@ Description: Cinnamon implementation of the freedesktop menu specification
  http://www.freedesktop.org/Standards/menu-spec
  .
  This package contains the shared library.
-Breaks: cinnamon (<< 3.4), cinnamon-control-center (<< 3.4)
+Breaks: cinnamon (<< 3.6), cinnamon-control-center (<< 3.6)
 
 Package: libcinnamon-menu-3-dev
 Section: libdevel
@@ -65,4 +65,4 @@ Description: GObject introspection data for the Cinnamon menu library
  .
  It can be used by languages supporting dynamic bindings with
  the GIRepository format.
-Breaks: cinnamon (<< 3.4)
+Breaks: cinnamon (<< 3.6)
