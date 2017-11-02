@@ -446,7 +446,7 @@ desktop_entry_ref (DesktopEntry *entry)
   g_return_val_if_fail (entry != NULL, NULL);
   g_return_val_if_fail (entry->refcount > 0, NULL);
 
-  g_atomic_int_inc (&entry->refcount);
+  entry->refcount += 1;
 
   return entry;
 }
@@ -680,43 +680,6 @@ desktop_entry_has_category (DesktopEntry *entry,
   return FALSE;
 }
 
-void
-desktop_entry_add_legacy_category (DesktopEntry *entry)
-{
-  GQuark *categories;
-  int     i;
-  DesktopEntryDesktop *desktop_entry;
-
-  g_return_if_fail (entry->type == DESKTOP_ENTRY_DESKTOP);
-
-  desktop_entry = (DesktopEntryDesktop*) entry;
-
-  menu_verbose ("Adding Legacy category to \"%s\"\n",
-                entry->basename);
-
-  if (desktop_entry->categories != NULL)
-    {
-      i = 0;
-      for (; desktop_entry->categories[i]; i++);
-
-      categories = g_new0 (GQuark, i + 2);
-
-      i = 0;
-      for (; desktop_entry->categories[i]; i++)
-        categories[i] = desktop_entry->categories[i];
-    }
-  else
-    {
-      categories = g_new0 (GQuark, 2);
-      i = 0;
-    }
-
-  categories[i] = g_quark_from_string ("Legacy");
-
-  g_free (desktop_entry->categories);
-  desktop_entry->categories = categories;
-}
-
 /*
  * Entry sets
  */
@@ -740,7 +703,7 @@ desktop_entry_set_ref (DesktopEntrySet *set)
   g_return_val_if_fail (set != NULL, NULL);
   g_return_val_if_fail (set->refcount > 0, NULL);
 
-  g_atomic_int_inc (&set->refcount);
+  set->refcount += 1;
 
   return set;
 }
@@ -748,13 +711,11 @@ desktop_entry_set_ref (DesktopEntrySet *set)
 void
 desktop_entry_set_unref (DesktopEntrySet *set)
 {
-  gboolean is_zero;
-
   g_return_if_fail (set != NULL);
   g_return_if_fail (set->refcount > 0);
 
-  is_zero = g_atomic_int_dec_and_test (&set->refcount);
-  if (is_zero)
+  set->refcount -= 1;
+  if (set->refcount == 0)
     {
       menu_verbose (" Deleting entry set %p\n", set);
 

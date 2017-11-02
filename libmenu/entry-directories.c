@@ -36,16 +36,14 @@ typedef struct CachedDirMonitor CachedDirMonitor;
 struct EntryDirectory
 {
   CachedDir *dir;
-  char      *legacy_prefix;
 
   guint entry_type : 2;
-  guint is_legacy : 1;
-  volatile gint refcount;
+  guint refcount : 24;
 };
 
 struct EntryDirectoryList
 {
-  volatile int refcount;
+  int    refcount;
   int    length;
   GList *dirs;
 };
@@ -65,10 +63,10 @@ struct CachedDir
   guint have_read_entries : 1;
   guint deleted : 1;
 
+  guint references;
+
   GFunc    notify;
   gpointer notify_data;
-
-  volatile gint references;
 };
 
 struct CachedDirMonitor
@@ -84,6 +82,7 @@ static void     cached_dir_free                   (CachedDir  *dir);
 static gboolean cached_dir_load_entries_recursive (CachedDir  *dir,
                                                    const char *dirname);
 static void     cached_dir_unref                  (CachedDir *dir);
+static void     cached_dir_unref_noparent         (CachedDir *dir);
 static CachedDir * cached_dir_add_subdir          (CachedDir  *dir,
                                                    const char *basename,
                                                    const char *path);
@@ -157,7 +156,7 @@ cached_dir_free (CachedDir *dir)
   dir->entries = NULL;
 
   g_slist_foreach (dir->subdirs,
-                   (GFunc) cached_dir_unref,
+                   (GFunc) cached_dir_unref_noparent,
                    NULL);
   g_slist_free (dir->subdirs);
   dir->subdirs = NULL;
@@ -172,18 +171,14 @@ cached_dir_free (CachedDir *dir)
 static CachedDir *
 cached_dir_ref (CachedDir *dir)
 {
-  g_atomic_int_inc (&dir->references);
-
+  dir->references++;
   return dir;
 }
 
 static void
 cached_dir_unref (CachedDir *dir)
 {
-  gboolean is_zero;
-
-  is_zero = g_atomic_int_dec_and_test (&dir->references);
-  if (is_zero)
+  if (--dir->references == 0)
     {
       CachedDir *parent;
 
@@ -192,6 +187,18 @@ cached_dir_unref (CachedDir *dir)
       if (parent != NULL)
         cached_dir_remove_subdir (parent, dir->name);
 
+      if (dir->notify)
+        dir->notify (dir, dir->notify_data);
+
+      cached_dir_free (dir);
+    }
+}
+
+static void
+cached_dir_unref_noparent (CachedDir *dir)
+{
+  if (--dir->references == 0)
+    {
       if (dir->notify)
         dir->notify (dir, dir->notify_data);
 
@@ -228,13 +235,8 @@ find_entry (CachedDir  *dir,
   tmp = dir->entries;
   while (tmp != NULL)
     {
-      const char *entry_basename;
-
-      entry_basename = desktop_entry_get_basename (tmp->data);
-      if (strcmp (entry_basename, basename) == 0)
-        {
-          return tmp->data;
-        }
+      if (strcmp (desktop_entry_get_basename (tmp->data), basename) == 0)
+        return tmp->data;
 
       tmp = tmp->next;
     }
@@ -348,9 +350,7 @@ cached_dir_update_entry (CachedDir  *dir,
   tmp = dir->entries;
   while (tmp != NULL)
     {
-      const char *entry_basename;
-      entry_basename = desktop_entry_get_basename (tmp->data);
-      if (strcmp (entry_basename, basename) == 0)
+      if (strcmp (desktop_entry_get_basename (tmp->data), basename) == 0)
         {
           if (!desktop_entry_reload (tmp->data))
 	    {
@@ -375,10 +375,7 @@ cached_dir_remove_entry (CachedDir  *dir,
   tmp = dir->entries;
   while (tmp != NULL)
     {
-      const char *entry_basename;
-      entry_basename = desktop_entry_get_basename (tmp->data);
-
-      if (strcmp (entry_basename, basename) == 0)
+      if (strcmp (desktop_entry_get_basename (tmp->data), basename) == 0)
         {
           desktop_entry_unref (tmp->data);
           dir->entries = g_slist_delete_link (dir->entries, tmp);
@@ -434,11 +431,8 @@ cached_dir_remove_subdir (CachedDir  *dir,
     {
       subdir->deleted = TRUE;
 
-      if (subdir->references == 0)
-        {
-          cached_dir_unref (subdir);
-          dir->subdirs = g_slist_remove (dir->subdirs, subdir);
-        }
+      cached_dir_unref (subdir);
+      dir->subdirs = g_slist_remove (dir->subdirs, subdir);
 
       return TRUE;
     }
@@ -544,16 +538,11 @@ handle_cached_dir_changed (MenuMonitor      *monitor,
   char     *basename;
   char     *dirname;
 
-  menu_verbose ("'%s' notified of '%s' %s - invalidating cache\n",
-		dir->name,
-                path,
-                event == MENU_MONITOR_EVENT_CREATED ? ("created") :
-                event == MENU_MONITOR_EVENT_DELETED ? ("deleted") : ("changed"));
-
   dirname  = g_path_get_dirname  (path);
   basename = g_path_get_basename (path);
 
   dir = cached_dir_lookup (dirname);
+  cached_dir_add_reference (dir);
 
   if (g_str_has_suffix (basename, ".desktop") ||
       g_str_has_suffix (basename, ".directory"))
@@ -652,6 +641,12 @@ handle_cached_dir_changed (MenuMonitor      *monitor,
 
   if (handled)
     {
+      menu_verbose ("'%s' notified of '%s' %s - invalidating cache\n",
+                    dir->name,
+                    path,
+                    event == MENU_MONITOR_EVENT_CREATED ? ("created") :
+                    event == MENU_MONITOR_EVENT_DELETED ? ("deleted") : ("changed"));
+
       /* CHANGED events don't change the set of desktop entries, unless it's the mimeinfo.cache file changing */
       if (retry_changes || (event == MENU_MONITOR_EVENT_CREATED || event == MENU_MONITOR_EVENT_DELETED))
         {
@@ -660,6 +655,8 @@ handle_cached_dir_changed (MenuMonitor      *monitor,
 
       cached_dir_queue_monitor_event (dir);
     }
+
+  cached_dir_remove_reference (dir);
 }
 
 static void
@@ -830,18 +827,14 @@ cached_dir_remove_reference (CachedDir *dir)
  * Entry directories
  */
 
-static EntryDirectory *
-entry_directory_new_full (DesktopEntryType  entry_type,
-                          const char       *path,
-                          gboolean          is_legacy,
-                          const char       *legacy_prefix)
+EntryDirectory *
+entry_directory_new (DesktopEntryType  entry_type,
+                     const char       *path)
 {
   EntryDirectory *ed;
   char           *canonical;
 
-  menu_verbose ("Loading entry directory \"%s\" (legacy %s)\n",
-                path,
-                is_legacy ? "<yes>" : "<no>");
+  menu_verbose ("Loading entry directory \"%s\"\n", path);
 
   canonical = menu_canonicalize_file_name (path, FALSE);
   if (canonical == NULL)
@@ -859,9 +852,7 @@ entry_directory_new_full (DesktopEntryType  entry_type,
   cached_dir_add_reference (ed->dir);
   cached_dir_load_entries_recursive (ed->dir, canonical);
 
-  ed->legacy_prefix = g_strdup (legacy_prefix);
   ed->entry_type    = entry_type;
-  ed->is_legacy     = is_legacy != FALSE;
   ed->refcount      = 1;
 
   g_free (canonical);
@@ -870,27 +861,12 @@ entry_directory_new_full (DesktopEntryType  entry_type,
 }
 
 EntryDirectory *
-entry_directory_new (DesktopEntryType  entry_type,
-                     const char       *path)
-{
-  return entry_directory_new_full (entry_type, path, FALSE, NULL);
-}
-
-EntryDirectory *
-entry_directory_new_legacy (DesktopEntryType  entry_type,
-                            const char       *path,
-                            const char       *legacy_prefix)
-{
-  return entry_directory_new_full (entry_type, path, TRUE, legacy_prefix);
-}
-
-EntryDirectory *
 entry_directory_ref (EntryDirectory *ed)
 {
   g_return_val_if_fail (ed != NULL, NULL);
   g_return_val_if_fail (ed->refcount > 0, NULL);
 
-  g_atomic_int_inc (&ed->refcount);
+  ed->refcount++;
 
   return ed;
 }
@@ -898,22 +874,15 @@ entry_directory_ref (EntryDirectory *ed)
 void
 entry_directory_unref (EntryDirectory *ed)
 {
-  gboolean is_zero;
-
   g_return_if_fail (ed != NULL);
   g_return_if_fail (ed->refcount > 0);
 
-  is_zero = g_atomic_int_dec_and_test (&ed->refcount);
-  if (is_zero)
+  if (--ed->refcount == 0)
     {
       cached_dir_remove_reference (ed->dir);
 
       ed->dir        = NULL;
       ed->entry_type = DESKTOP_ENTRY_INVALID;
-      ed->is_legacy  = FALSE;
-
-      g_free (ed->legacy_prefix);
-      ed->legacy_prefix = NULL;
 
       g_free (ed);
     }
@@ -962,26 +931,7 @@ get_desktop_file_id_from_path (EntryDirectory   *ed,
 
   if (entry_type == DESKTOP_ENTRY_DESKTOP)
     {
-      if (!ed->is_legacy)
-	{
-	  retval = g_strdelimit (g_strdup (relative_path), "/", '-');
-	}
-      else
-	{
-	  char *basename;
-
-	  basename = g_path_get_basename (relative_path);
-
-	  if (ed->legacy_prefix)
-	    {
-	      retval = g_strjoin ("-", ed->legacy_prefix, basename, NULL);
-	      g_free (basename);
-	    }
-	  else
-	    {
-	      retval = basename;
-	    }
-	}
+      retval = g_strdelimit (g_strdup (relative_path), "/", '-');
     }
   else
     {
@@ -1020,12 +970,11 @@ entry_directory_foreach_recursive (EntryDirectory            *ed,
 
       if (desktop_entry_get_type (entry) == ed->entry_type)
         {
-          gboolean    ret;
-          char       *file_id;
-          const char *basename;
+          gboolean  ret;
+          char     *file_id;
 
-          basename = desktop_entry_get_basename (entry);
-          g_string_append (relative_path, basename);
+          g_string_append (relative_path,
+                           desktop_entry_get_basename (entry));
 
 	  file_id = get_desktop_file_id_from_path (ed,
 						   ed->entry_type,
@@ -1105,7 +1054,7 @@ entry_directory_get_flat_contents (EntryDirectory   *ed,
       DesktopEntry *entry = tmp->data;
       const char   *basename;
 
-      basename = desktop_entry_get_path (entry);
+      basename = desktop_entry_get_basename (entry);
 
       if (desktop_entries &&
           desktop_entry_get_type (entry) == DESKTOP_ENTRY_DESKTOP)
@@ -1178,7 +1127,7 @@ entry_directory_list_ref (EntryDirectoryList *list)
   g_return_val_if_fail (list != NULL, NULL);
   g_return_val_if_fail (list->refcount > 0, NULL);
 
-  g_atomic_int_inc (&list->refcount);
+  list->refcount += 1;
 
   return list;
 }
@@ -1186,13 +1135,11 @@ entry_directory_list_ref (EntryDirectoryList *list)
 void
 entry_directory_list_unref (EntryDirectoryList *list)
 {
-  gboolean is_zero;
-
   g_return_if_fail (list != NULL);
   g_return_if_fail (list->refcount > 0);
 
-  is_zero = g_atomic_int_dec_and_test (&list->refcount);
-  if (is_zero)
+  list->refcount -= 1;
+  if (list->refcount == 0)
     {
       g_list_foreach (list->dirs, (GFunc) entry_directory_unref, NULL);
       g_list_free (list->dirs);
@@ -1292,15 +1239,7 @@ get_all_func (EntryDirectory   *ed,
               DesktopEntrySet  *set,
               gpointer          user_data)
 {
-  if (ed->is_legacy && !desktop_entry_has_categories (entry))
-    {
-      entry = desktop_entry_copy (entry);
-      desktop_entry_add_legacy_category (entry);
-    }
-  else
-    {
-      entry = desktop_entry_ref (entry);
-    }
+  entry = desktop_entry_ref (entry);
 
   desktop_entry_set_add_entry (set, entry, file_id);
   desktop_entry_unref (entry);
