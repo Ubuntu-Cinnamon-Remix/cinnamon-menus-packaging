@@ -22,6 +22,7 @@ Vcs-Browser: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-menus.git
 Vcs-Git: https://anonscm.debian.org/git/pkg-cinnamon/cinnamon-menus.git
 
 Package: libcinnamon-menu-3-0
+Section: libs
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Cinnamon implementation of the freedesktop menu specification
