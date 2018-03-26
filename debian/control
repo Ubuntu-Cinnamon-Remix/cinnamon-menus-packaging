@@ -10,7 +10,7 @@ Homepage: http://cinnamon.linuxmint.com
 Build-Depends:
  autoconf-archive,
  automake,
- debhelper (>= 9),
+ debhelper (>= 11~),
  dh-autoreconf,
  gnome-pkg-tools,
  gobject-introspection (>= 0.9.12-4~),
