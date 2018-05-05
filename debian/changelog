@@ -1,8 +1,17 @@
-cinnamon-menus (3.8.0-1~) UNRELEASED; urgency=medium
+cinnamon-menus (3.8.0-1) experimental; urgency=medium
 
+  [ Fabio Fantoni ]
   * New upstream release (3.8.0).
+  * fix mistake in debian/copyright
 
- -- Fabio Fantoni <fantonifabio@tiscali.it>  Mon, 23 Apr 2018 15:42:52 +0200
+  [ Maximiliano Curia ]
+  * Bump Standards-Version to 4.1.4.
+  * Use dh_missing instead of dh_install --list-missing
+  * Enable hardening bindnow
+  * Bump group breaks (3.8)
+  * Release to experimental
+
+ -- Maximiliano Curia <maxy@debian.org>  Sat, 05 May 2018 14:30:09 +0200
 
 cinnamon-menus (3.6.0-1) unstable; urgency=medium
 
