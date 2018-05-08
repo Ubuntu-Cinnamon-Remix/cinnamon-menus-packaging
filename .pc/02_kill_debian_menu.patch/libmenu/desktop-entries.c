@@ -45,7 +45,6 @@ typedef struct
 
   GDesktopAppInfo *appinfo;
   GQuark          *categories;
-  guint            showin : 1;
 } DesktopEntryDesktop;
 
 typedef struct
@@ -158,37 +157,22 @@ key_file_get_show_in (GKeyFile *key_file)
   gchar **strv;
   gboolean show_in = TRUE;
   int i;
-  gchar *exec;
 
   current_desktop = get_current_desktop ();
   if (!current_desktop)
     return TRUE;
-
-  exec = g_key_file_get_string (key_file,
-                                DESKTOP_ENTRY_GROUP,
-                                "Exec",
-                                NULL);
-
-  if (exec) {
-      if (g_str_has_prefix (exec, "gnome-control-center")) {
-        g_free (exec);
-        return FALSE;
-      }
-      g_free (exec);
-  }
 
   strv = g_key_file_get_string_list (key_file,
                                      DESKTOP_ENTRY_GROUP,
                                      "OnlyShowIn",
                                      NULL,
                                      NULL);
-
   if (strv)
     {
       show_in = FALSE;
       for (i = 0; strv[i]; i++)
         {
-          if (!strcmp (strv[i], "GNOME") || !strcmp (strv[i], "X-Cinnamon"))
+          if (!strcmp (strv[i], current_desktop))
             {
               show_in = TRUE;
               break;
@@ -263,22 +247,21 @@ desktop_entry_load_directory (DesktopEntry  *entry,
   return TRUE;
 }
 
-static DesktopEntryResultCode
+static gboolean
 desktop_entry_load (DesktopEntry *entry)
 {
-  if (strstr (entry->path, "/menu-xdg/"))
-    return DESKTOP_ENTRY_LOAD_FAIL_OTHER;
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
     {
-      GKeyFile *key_file = NULL;
       DesktopEntryDesktop *entry_desktop = (DesktopEntryDesktop*)entry;
       const char *categories_str;
 
       entry_desktop->appinfo = g_desktop_app_info_new_from_filename (entry->path);
-      if (!G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo))
+      if (!entry_desktop->appinfo ||
+          !g_app_info_get_name (G_APP_INFO (entry_desktop->appinfo)) ||
+          !g_app_info_get_executable (G_APP_INFO (entry_desktop->appinfo)))
         {
           menu_verbose ("Failed to load \"%s\"\n", entry->path);
-          return DESKTOP_ENTRY_LOAD_FAIL_APPINFO;
+          return FALSE;
         }
 
       categories_str = g_desktop_app_info_get_categories (entry_desktop->appinfo);
@@ -296,43 +279,28 @@ desktop_entry_load (DesktopEntry *entry)
           g_strfreev (categories);
         }
 
-      key_file = g_key_file_new ();
-
-      if (!g_key_file_load_from_file (key_file, entry->path, 0, NULL))
-        entry_desktop->showin = TRUE;
-      else
-        entry_desktop->showin = key_file_get_show_in (key_file);
-
-      g_key_file_free (key_file);
-
-      return DESKTOP_ENTRY_LOAD_SUCCESS;
+      return TRUE;
     }
   else if (entry->type == DESKTOP_ENTRY_DIRECTORY)
     {
       GKeyFile *key_file = NULL;
       GError   *error = NULL;
-      DesktopEntryResultCode rescode = DESKTOP_ENTRY_LOAD_SUCCESS;
+      gboolean  retval = FALSE;
 
       key_file = g_key_file_new ();
 
       if (!g_key_file_load_from_file (key_file, entry->path, 0, &error))
-        {
-          rescode = DESKTOP_ENTRY_LOAD_FAIL_OTHER;
-          goto out;
-        }
+        goto out;
 
       if (!desktop_entry_load_directory (entry, key_file, &error))
-        {
-          rescode = DESKTOP_ENTRY_LOAD_FAIL_OTHER;
-          goto out;
-        }
+        goto out;
 
-      rescode = DESKTOP_ENTRY_LOAD_SUCCESS;
+      retval = TRUE;
 
     out:
       g_key_file_free (key_file);
 
-      if (rescode == DESKTOP_ENTRY_LOAD_FAIL_OTHER)
+      if (!retval)
         {
           if (error)
             {
@@ -343,21 +311,19 @@ desktop_entry_load (DesktopEntry *entry)
             menu_verbose ("Failed to load \"%s\"\n", entry->path);
         }
 
-      return rescode;
+      return retval;
     }
   else
     g_assert_not_reached ();
 
-  return DESKTOP_ENTRY_LOAD_FAIL_OTHER;
+  return FALSE;
 }
 
 DesktopEntry *
-desktop_entry_new (const char             *path,
-                   DesktopEntryResultCode *res_code)
+desktop_entry_new (const char *path)
 {
   DesktopEntryType  type;
   DesktopEntry     *retval;
-  DesktopEntryResultCode code;
 
   menu_verbose ("Loading desktop entry \"%s\"\n", path);
 
@@ -375,7 +341,6 @@ desktop_entry_new (const char             *path,
     {
       menu_verbose ("Unknown desktop entry suffix in \"%s\"\n",
                     path);
-      *res_code = DESKTOP_ENTRY_LOAD_FAIL_OTHER;
       return NULL;
     }
 
@@ -384,10 +349,7 @@ desktop_entry_new (const char             *path,
   retval->path     = g_strdup (path);
   retval->basename = unix_basename_from_path (retval->path);
 
-  code = desktop_entry_load (retval);
-  *res_code = code;
-
-  if (code < DESKTOP_ENTRY_LOAD_SUCCESS)
+  if (!desktop_entry_load (retval))
     {
       desktop_entry_unref (retval);
       return NULL;
@@ -429,7 +391,7 @@ desktop_entry_reload (DesktopEntry *entry)
   else
     g_assert_not_reached ();
 
-  if (desktop_entry_load (entry) < DESKTOP_ENTRY_LOAD_SUCCESS)
+  if (!desktop_entry_load (entry))
     {
       desktop_entry_unref (entry);
       return NULL;
@@ -444,7 +406,7 @@ desktop_entry_ref (DesktopEntry *entry)
   g_return_val_if_fail (entry != NULL, NULL);
   g_return_val_if_fail (entry->refcount > 0, NULL);
 
-  entry->refcount += 1;
+  g_atomic_int_inc (&entry->refcount);
 
   return entry;
 }
@@ -571,11 +533,7 @@ const char *
 desktop_entry_get_name (DesktopEntry *entry)
 {
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
-    {
-      g_return_val_if_fail (G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo), NULL);
-      return g_app_info_get_name (G_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo));
-    }
-
+    return g_app_info_get_name (G_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo));
   return ((DesktopEntryDirectory*)entry)->name;
 }
 
@@ -583,11 +541,7 @@ const char *
 desktop_entry_get_generic_name (DesktopEntry *entry)
 {
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
-    {
-      g_return_val_if_fail (G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo), NULL);
-      return g_desktop_app_info_get_generic_name (((DesktopEntryDesktop*)entry)->appinfo);
-    }
-
+    return g_desktop_app_info_get_generic_name (((DesktopEntryDesktop*)entry)->appinfo);
   return ((DesktopEntryDirectory*)entry)->generic_name;
 }
 
@@ -595,11 +549,7 @@ const char *
 desktop_entry_get_comment (DesktopEntry *entry)
 {
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
-    {
-      g_return_val_if_fail (G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo), NULL);
-      return g_app_info_get_description (G_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo));
-    }
-
+    return g_app_info_get_description (G_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo));
   return ((DesktopEntryDirectory*)entry)->comment;
 }
 
@@ -607,11 +557,7 @@ GIcon *
 desktop_entry_get_icon (DesktopEntry *entry)
 {
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
-    {
-      g_return_val_if_fail (G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo), NULL);
-      return g_app_info_get_icon (G_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo));
-    }
-
+    return g_app_info_get_icon (G_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo));
   return ((DesktopEntryDirectory*)entry)->icon;
 }
 
@@ -619,11 +565,7 @@ gboolean
 desktop_entry_get_no_display (DesktopEntry *entry)
 {
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
-    {
-      g_return_val_if_fail (G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo), FALSE);
-      return g_desktop_app_info_get_nodisplay (((DesktopEntryDesktop*)entry)->appinfo);
-    }
-
+    return g_desktop_app_info_get_nodisplay (((DesktopEntryDesktop*)entry)->appinfo);
   return ((DesktopEntryDirectory*)entry)->nodisplay;
 }
 
@@ -631,11 +573,7 @@ gboolean
 desktop_entry_get_hidden (DesktopEntry *entry)
 {
   if (entry->type == DESKTOP_ENTRY_DESKTOP)
-    {
-      g_return_val_if_fail (G_IS_DESKTOP_APP_INFO (((DesktopEntryDesktop*)entry)->appinfo), FALSE);
-      return g_desktop_app_info_get_is_hidden (((DesktopEntryDesktop*)entry)->appinfo);
-    }
-
+    return g_desktop_app_info_get_is_hidden (((DesktopEntryDesktop*)entry)->appinfo);
   return ((DesktopEntryDirectory*)entry)->hidden;
 }
 
@@ -648,9 +586,8 @@ desktop_entry_get_show_in (DesktopEntry *entry)
 
       if (current_desktop == NULL)
         return TRUE;
-      else {
-        return ((DesktopEntryDesktop *)entry)->showin;
-      }
+      else
+        return g_desktop_app_info_get_show_in (((DesktopEntryDesktop*)entry)->appinfo, current_desktop);
     }
   return ((DesktopEntryDirectory*)entry)->showin;
 }
@@ -702,6 +639,43 @@ desktop_entry_has_category (DesktopEntry *entry,
   return FALSE;
 }
 
+void
+desktop_entry_add_legacy_category (DesktopEntry *entry)
+{
+  GQuark *categories;
+  int     i;
+  DesktopEntryDesktop *desktop_entry;
+
+  g_return_if_fail (entry->type == DESKTOP_ENTRY_DESKTOP);
+
+  desktop_entry = (DesktopEntryDesktop*) entry;
+
+  menu_verbose ("Adding Legacy category to \"%s\"\n",
+                entry->basename);
+
+  if (desktop_entry->categories != NULL)
+    {
+      i = 0;
+      for (; desktop_entry->categories[i]; i++);
+
+      categories = g_new0 (GQuark, i + 2);
+
+      i = 0;
+      for (; desktop_entry->categories[i]; i++)
+        categories[i] = desktop_entry->categories[i];
+    }
+  else
+    {
+      categories = g_new0 (GQuark, 2);
+      i = 0;
+    }
+
+  categories[i] = g_quark_from_string ("Legacy");
+
+  g_free (desktop_entry->categories);
+  desktop_entry->categories = categories;
+}
+
 /*
  * Entry sets
  */
@@ -725,7 +699,7 @@ desktop_entry_set_ref (DesktopEntrySet *set)
   g_return_val_if_fail (set != NULL, NULL);
   g_return_val_if_fail (set->refcount > 0, NULL);
 
-  set->refcount += 1;
+  g_atomic_int_inc (&set->refcount);
 
   return set;
 }
@@ -733,11 +707,13 @@ desktop_entry_set_ref (DesktopEntrySet *set)
 void
 desktop_entry_set_unref (DesktopEntrySet *set)
 {
+  gboolean is_zero;
+
   g_return_if_fail (set != NULL);
   g_return_if_fail (set->refcount > 0);
 
-  set->refcount -= 1;
-  if (set->refcount == 0)
+  is_zero = g_atomic_int_dec_and_test (&set->refcount);
+  if (is_zero)
     {
       menu_verbose (" Deleting entry set %p\n", set);
 
