@@ -1,0 +1,69 @@
+Source: cinnamon-menus
+Section: x11
+Priority: optional
+Maintainer: Clement Lefebvre <root@linuxmint.com>
+Build-Depends: debhelper (>= 9),
+               dh-autoreconf,
+               autoconf-archive,
+               dh-python,
+               gnome-common,
+               gnome-pkg-tools,
+               gobject-introspection (>= 0.9.12-4~),
+               intltool (>= 0.40.0),
+               libgirepository1.0-dev (>= 0.10.7-1~),
+               libglib2.0-dev (>= 2.30.0),
+               python3 (>= 3.1)
+Standards-Version: 3.9.5
+X-Python3-Version: >= 3.1
+
+Package: libcinnamon-menu-3-0
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Cinnamon implementation of the freedesktop menu specification
+ The package contains an implementation of the draft
+ "Desktop Menu Specification" from freedesktop.org:
+ .
+ http://www.freedesktop.org/Standards/menu-spec
+ .
+ This package contains the shared library.
+
+Package: libcinnamon-menu-3-0-dbg
+Section: debug
+Priority: extra
+Architecture: any
+Depends: libcinnamon-menu-3-0 (= ${binary:Version}), ${misc:Depends}
+Description: Cinnamon implementation of the freedesktop menu specification
+ The package contains an implementation of the draft
+ "Desktop Menu Specification" from freedesktop.org:
+ .
+ http://www.freedesktop.org/Standards/menu-spec
+ .
+ This package contains debugging symbols.
+
+Package: libcinnamon-menu-3-dev
+Architecture: any
+Section: libdevel
+Depends: gir1.2-cmenu-3.0 (= ${binary:Version}),
+         libcinnamon-menu-3-0 (= ${binary:Version}),
+         libglib2.0-dev (>= 2.30.0),
+         ${misc:Depends}
+Replaces: gir-repository-dev (<< 0.6.5-6)
+Description: Cinnamon implementation of the freedesktop menu specification
+ The package contains an implementation of the draft
+ "Desktop Menu Specification" from freedesktop.org:
+ .
+ http://www.freedesktop.org/Standards/menu-spec
+ .
+ This package contains the development headers.
+
+Package: gir1.2-cmenu-3.0
+Section: introspection
+Architecture: any
+Depends: ${gir:Depends}, ${misc:Depends}, ${shlibs:Depends}
+Conflicts: gobject-introspection-repository
+Description: GObject introspection data for the Cinnamon menu library
+ This package contains introspection data for Cinnamon menu, an
+ implementation of the desktop menu specification from freedesktop.org.
+ .
+ It can be used by languages supporting dynamic bindings with
+ the GIRepository format.
