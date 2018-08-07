@@ -1,8 +1,10 @@
-cinnamon-menus (3.8.2-1~) UNRELEASED; urgency=medium
+cinnamon-menus (3.8.2-1) unstable; urgency=medium
 
   * New upstream release (3.8.2).
+  * Drop dbgsym-migration rule
+  * Release to unstable
 
- -- Maximiliano Curia <maxy@debian.org>  Sun, 10 Jun 2018 16:05:15 +0200
+ -- Maximiliano Curia <maxy@debian.org>  Tue, 07 Aug 2018 14:51:32 +0200
 
 cinnamon-menus (3.8.1-1) experimental; urgency=medium
 
