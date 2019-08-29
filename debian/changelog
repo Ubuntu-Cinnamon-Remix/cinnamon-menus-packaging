@@ -1,3 +1,9 @@
+cinnamon-menus (4.2.0-1~) UNRELEASED; urgency=medium
+
+  * New upstream release (4.2.0)
+
+ -- Norbert Preining <norbert@preining.info>  Thu, 29 Aug 2019 10:06:12 +0900
+
 cinnamon-menus (4.0.0-1~) UNRELEASED; urgency=medium
 
   * New upstream release (4.0.0)
