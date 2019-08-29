@@ -6,9 +6,6 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+bindnow
 %:
 	dh $@
 
-override_dh_autoreconf:
-	NOCONFIGURE=1 dh_autoreconf --as-needed ./autogen.sh
-
 override_dh_missing:
 	dh_missing --list-missing
 
