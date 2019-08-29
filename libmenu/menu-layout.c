@@ -19,8 +19,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#include <config.h>
-
 #include "menu-layout.h"
 
 #include <string.h>
@@ -29,7 +27,6 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "canonicalize.h"
 #include "entry-directories.h"
 #include "menu-util.h"
 
@@ -961,7 +958,7 @@ menu_layout_values_set (MenuLayoutValues *values,
       values->inline_menus = strcmp (inline_menus, "true") == 0;
       values->mask |= MENU_LAYOUT_VALUES_INLINE_MENUS;
     }
-  
+
   if (inline_limit != NULL)
     {
       char *end;

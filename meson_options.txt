@@ -1,0 +1,15 @@
+option('deprecated_warnings',
+	type: 'boolean',
+	value: true,
+	description: 'Show build warnings for deprecations'
+)
+option('enable_debug',
+	type: 'boolean',
+	value: true,
+	description: 'Enable debugging'
+)
+option('enable_docs',
+    type: 'boolean',
+    value: false,
+    description: 'Build the API references (requires gtk-doc)'
+)
