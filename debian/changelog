@@ -1,3 +1,9 @@
+cinnamon-menus (4.2.0-3) UNRELEASED; urgency=medium
+
+  * Upload to unstable
+
+ -- Norbert Preining <norbert@preining.info>  Thu, 19 Sep 2019 13:47:22 +0900
+
 cinnamon-menus (4.2.0-2) experimental; urgency=medium
 
   [ Fabio Fantoni ]
