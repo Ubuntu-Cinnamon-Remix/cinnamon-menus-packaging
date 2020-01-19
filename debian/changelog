@@ -1,8 +1,8 @@
-cinnamon-menus (4.4.0-1~1) UNRELEASED; urgency=medium
+cinnamon-menus (4.4.0-1) experimental; urgency=medium
 
   * New upstream version 4.4.0 (no functional change, only version update)
 
- -- Norbert Preining <norbert@preining.info>  Tue, 26 Nov 2019 14:06:54 +0900
+ -- Norbert Preining <norbert@preining.info>  Sun, 19 Jan 2020 09:47:19 +0900
 
 cinnamon-menus (4.2.0-3) unstable; urgency=medium
 
