@@ -10,6 +10,7 @@ libcinnamon-menu-3.so.0 libcinnamon-menu-3-0 #MINVER#
  desktop_entry_get_generic_name@Base 4.2.0
  desktop_entry_get_hidden@Base 4.2.0
  desktop_entry_get_icon@Base 4.2.0
+ desktop_entry_get_id@Base 4.8.0
  desktop_entry_get_name@Base 4.2.0
  desktop_entry_get_no_display@Base 4.2.0
  desktop_entry_get_path@Base 4.2.0
@@ -45,6 +46,28 @@ libcinnamon-menu-3.so.0 libcinnamon-menu-3-0 #MINVER#
  entry_directory_new@Base 4.2.0
  entry_directory_ref@Base 4.2.0
  entry_directory_unref@Base 4.2.0
+ gmenu_desktopappinfo_get_action_name@Base 4.8.0
+ gmenu_desktopappinfo_get_boolean@Base 4.8.0
+ gmenu_desktopappinfo_get_categories@Base 4.8.0
+ gmenu_desktopappinfo_get_filename@Base 4.8.0
+ gmenu_desktopappinfo_get_flatpak_app_id@Base 4.8.0
+ gmenu_desktopappinfo_get_generic_name@Base 4.8.0
+ gmenu_desktopappinfo_get_is_flatpak@Base 4.8.0
+ gmenu_desktopappinfo_get_is_hidden@Base 4.8.0
+ gmenu_desktopappinfo_get_keywords@Base 4.8.0
+ gmenu_desktopappinfo_get_locale_string@Base 4.8.0
+ gmenu_desktopappinfo_get_nodisplay@Base 4.8.0
+ gmenu_desktopappinfo_get_show_in@Base 4.8.0
+ gmenu_desktopappinfo_get_startup_wm_class@Base 4.8.0
+ gmenu_desktopappinfo_get_string@Base 4.8.0
+ gmenu_desktopappinfo_get_type@Base 4.8.0
+ gmenu_desktopappinfo_has_key@Base 4.8.0
+ gmenu_desktopappinfo_launch_action@Base 4.8.0
+ gmenu_desktopappinfo_launch_uris_as_manager@Base 4.8.0
+ gmenu_desktopappinfo_list_actions@Base 4.8.0
+ gmenu_desktopappinfo_new@Base 4.8.0
+ gmenu_desktopappinfo_new_from_filename@Base 4.8.0
+ gmenu_desktopappinfo_new_from_keyfile@Base 4.8.0
  gmenu_tree_alias_get_aliased_directory@Base 2.2.0
  gmenu_tree_alias_get_aliased_entry@Base 2.2.0
  gmenu_tree_alias_get_aliased_item_type@Base 2.2.0
@@ -68,6 +91,7 @@ libcinnamon-menu-3.so.0 libcinnamon-menu-3-0 #MINVER#
  gmenu_tree_entry_get_desktop_file_id@Base 2.2.0
  gmenu_tree_entry_get_desktop_file_path@Base 2.2.0
  gmenu_tree_entry_get_is_excluded@Base 2.2.0
+ gmenu_tree_entry_get_is_flatpak@Base 4.8.0
  gmenu_tree_entry_get_is_nodisplay_recurse@Base 2.2.0
  gmenu_tree_entry_get_is_unallocated@Base 2.2.0
  gmenu_tree_entry_get_parent@Base 2.2.0
