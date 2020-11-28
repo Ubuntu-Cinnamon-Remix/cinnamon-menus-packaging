@@ -1,8 +1,9 @@
-cinnamon-menus (4.8.0-1~) UNRELEASED; urgency=medium
+cinnamon-menus (4.8.1-1~) UNRELEASED; urgency=medium
 
-  * New upstream version 4.8.0
+  * New upstream version 4.8.1
+  * update symbols
 
- -- Norbert Preining <norbert@preining.info>  Thu, 26 Nov 2020 10:27:02 +0900
+ -- Norbert Preining <norbert@preining.info>  Sat, 28 Nov 2020 10:22:43 +0900
 
 cinnamon-menus (4.6.1-1) unstable; urgency=medium
 
