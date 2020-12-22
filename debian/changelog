@@ -1,4 +1,4 @@
-cinnamon-menus (4.8.2-3) UNRELEASED; urgency=high
+cinnamon-menus (4.8.2-3) unstable; urgency=high
 
   * Dump cinnamon breaks version to 4.8 (Closes: #977890)
 
