@@ -1,3 +1,9 @@
+cinnamon-menus (4.8.2-3) UNRELEASED; urgency=high
+
+  * Dump cinnamon breaks version to 4.8 (Closes: #977890)
+
+ -- Fabio Fantoni <fantonifabio@tiscali.it>  Tue, 22 Dec 2020 14:34:48 +0100
+
 cinnamon-menus (4.8.2-2) unstable; urgency=medium
 
   * Release to unstable.
