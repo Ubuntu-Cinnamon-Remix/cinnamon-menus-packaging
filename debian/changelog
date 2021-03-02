@@ -1,8 +1,9 @@
-cinnamon-menus (4.8.3-1~) UNRELEASED; urgency=medium
+cinnamon-menus (4.8.3-1) unstable; urgency=medium
 
+  [ Fabio Fantoni ]
   * New upstream bugfix version 4.8.3
 
- -- Fabio Fantoni <fantonifabio@tiscali.it>  Sun, 28 Feb 2021 14:23:04 +0100
+ -- Norbert Preining <norbert@preining.info>  Tue, 02 Mar 2021 13:51:38 +0900
 
 cinnamon-menus (4.8.2-3) unstable; urgency=high
 
