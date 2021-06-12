@@ -6,7 +6,8 @@ Uploaders:
  Maximiliano Curia <maxy@debian.org>,
  Margarita Manterola <marga@debian.org>,
  Fabio Fantoni <fantonifabio@tiscali.it>,
- Norbert Preining <norbert@preining.info>
+ Norbert Preining <norbert@preining.info>,
+ Joshua Peisach <itzswirlz2020@outlook.com>
 Homepage: http://cinnamon.linuxmint.com
 Build-Depends:
  debhelper (>= 11~),
